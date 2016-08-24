@@ -1,0 +1,163 @@
+---
+title: "AIR"
+author: "Automated Insights Report"
+output: html_document
+---
+
+## About your data
+
+The dataset is called `r getfilename()[1]`
+
+It has `r dim(dat())[1]` rows and `r dim(dat())[2]` columns.
+
+The column names are: `r colnames(dat())`
+
+### Preview 
+
+Here is a preview of the top 10 rows:
+```{r top10, echo=FALSE, message=FALSE, warning=FALSE, results = 'asis'}
+panderOptions("digits", 2)
+pander(head(dat()))
+```
+
+And the bottom 10 rows:
+```{r bot10, echo=FALSE, message=FALSE, warning=FALSE, results = 'asis'}
+panderOptions("digits", 2)
+pander(tail(dat()))
+```
+
+Here is the data structure:
+```{r struc, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+panderOptions("digits", 2)
+pander(str(dat()))
+```
+
+### Missing Values
+
+```{r missing, echo=FALSE, message=FALSE, warning=FALSE, results = 'asis'}
+
+if(sum(sapply(X=dat(), FUN= function(x) sum(is.na(x)))) == 0){
+  
+ knitr::kable("There are no missing (NA) values in the dataset")
+  
+} else {
+  
+  knitr::kable(sapply(X=dat(), FUN= function(x) sum(is.na(x))))
+
+}
+
+```
+
+### Number of Records
+
+```{r numrecs, echo=FALSE, message=FALSE, warning=FALSE, results = 'asis'}
+
+  Num.Records <- NULL
+  Unique.Records <- NULL
+  
+  for(i in 1:ncol(dat())){
+    
+    Num.Records[i] <- nrow(dat()[i])
+    
+    Unique.Records[i] <- nrow(unique(dat()[i]))
+    
+  }
+  
+ knitr::kable(cbind(Column.Name = colnames(dat()), Num.Records, Unique.Records))
+
+```
+
+\pagebreak
+
+## Statistics  
+
+### Summary Statistics
+```{r summ, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+panderOptions("digits", 2)
+pander(summary(dat()))
+```
+\pagebreak
+
+## Visualisation
+
+### Univariate Histograms
+
+```{r plots, echo=FALSE, message=FALSE, warning=FALSE}
+
+numerics <- as.logical(NULL)
+
+for(j in 1:ncol(dat())){
+  
+  numerics[j] <- is.numeric(dat()[,j])
+  
+} 
+
+x<-dat()[numerics]
+uniPlot(data = x, type = "histogram")
+
+par(mfrow=c(1,1))
+```
+
+\pagebreak
+
+```{r scatter, echo=FALSE, message=FALSE, warning=FALSE}
+scatterplotMatrix(x[,1:6], 
+                  main = "Scatterplot Matrix",
+                  diagonal = "boxplot",
+                  smoother = FALSE,
+                  reg.line = FALSE,
+                  id.n = 1,
+                  id.method = "mahal")
+
+
+```
+
+\pagebreak
+
+### Correlations
+
+```{r corr, echo=FALSE, message=FALSE, warning=FALSE}
+par(mfrow=c(1,1))
+
+corrgram(x, order=TRUE, lower.panel=panel.shade, 
+         upper.panel=panel.pts, text.panel=panel.txt, 
+         main="Correlogram")
+
+```
+
+\pagebreak
+
+### Factor Plots  
+
+```{r factorplot, echo=FALSE, message=FALSE, warning=FALSE}
+par(mfrow=c(2,2))
+    
+for(j in 1:ncol(dat())){
+  
+  if(is.factor(dat()[,j])){
+    
+    barplot(sort(head(table(dat()[j]), n = 20), decreasing= TRUE), 
+            horiz= FALSE, 
+            col ="#31688EFF", 
+            ylab = "Frequency", 
+            las = 2,
+            cex.names= 0.8,
+            main = paste("Barplot (Top 20 levels) of",colnames(dat())[j])
+    )
+  }
+}  
+
+```
+
+\pagebreak
+
+## Outliers
+
+```{r outliers, echo=FALSE, message=FALSE, warning=FALSE}
+par(mfrow=c(1,1))
+
+result = mvOutlier(x, qqplot = TRUE, method = "quan", label = TRUE)
+result$outlier[result$outlier$Outlier== TRUE,]
+
+```
+
