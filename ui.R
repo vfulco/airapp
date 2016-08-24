@@ -2,7 +2,8 @@
 library(shiny)
 
 shinyUI(fluidPage(
-  titlePanel("AIR"),
+  titlePanel(""),
+ 
   sidebarLayout(
     sidebarPanel(
       h3("Step 1"),
@@ -11,12 +12,10 @@ shinyUI(fluidPage(
                          'text/comma-separated-values,text/plain', 
                          '.csv')),
       checkboxInput('header', 'File has headers?', TRUE),
+      
       tags$hr(),
       h3("Step 2"),
-      p("Check your data to ensure it looks right"),
-      br(),
-      br(),
-      br(),
+      ("Interact with your data"),
       br(),
       tags$hr(),
       h3("Step 3"),
@@ -26,12 +25,16 @@ shinyUI(fluidPage(
     ),
     
     mainPanel(
-      
-      h3("Step 1"),
-      h3("Step 1"),
-      h3("Step 1"),
-      #First 10 rows
-      tableOutput('contents')
+      img(src="rimage.jpg", height = 107, width = 107),
+      h2("Automatic Insights Report - AIR"),
+      br(),
+      ("Start getting insights by uploading any CSV (comma separated) file to be analysed. Make sure the data are in a table starting in the top left hand corner with column labels only."),
+      br(),
+      br(),
+      ("Click on the Download button in sidebar to download your completed Automated Insights Report."),
+      br(),
+      br(),
+      dataTableOutput('contents')
     )
   )
 ))

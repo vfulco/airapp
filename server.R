@@ -22,10 +22,10 @@ shinyServer(function(input, output) {
     
   })
   
-  # Show first 10 rows
-  output$contents <- renderTable({
+  # Interactive Data Preview
+  output$contents <- renderDataTable({
     
-    head(dat())
+   dat()
     
     })
   
