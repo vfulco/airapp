@@ -1,8 +1,10 @@
 ---
 title: "Automated Insights Report"
 author: "Get insights from your data quicker"
+date: "`r format(Sys.Date(), '%d %B %Y')`"
 output: html_document
 ---
+
 
 ## About your data
 
@@ -155,7 +157,7 @@ if(length(x) <= 1){
            main= paste("Correllation Plot of",  getfilename()[1])
            )
            
-    knitr::kable(cor(dat()))
+    knitr::kable(cor(x))
 }
 
 ```
