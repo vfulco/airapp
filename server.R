@@ -4,7 +4,7 @@
 #' AUTOMATED INSIGHTS REPORT - AIR - SHINY APP
 #' 
 #' Author: Dean Marchiori
-#' Date: Auguest 2016
+#' Date: March 2017
 #' Desc: Shiny Package for "Automated Insights Report" project
 #' Aims to produce a Shiny UI to upload, interact and download a data as a report.
 # =======================================================================================#
