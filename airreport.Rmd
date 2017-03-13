@@ -2,9 +2,10 @@
 title: "Automated Insights Report"
 author: "Diagnosic & Exploratory Data Report"
 date: "`r format(Sys.Date(), '%d %B %Y')`"
-output: html_document
+output: 
+  pdf_document: 
+    toc: yes
 ---
-
 
 ## Data Profile
 
@@ -15,26 +16,27 @@ Dimensions: `r dim(dat())[1]` rows and `r dim(dat())[2]` columns.
 Column names: `r colnames(dat())`
 
 
+### Data Structure:
+
+```{r structure, echo=FALSE, message=TRUE, warning=TRUE}
+print(str(dat()))
+```
+
+
 ### Preview 
 
-Preview of the top 10 rows:
+#### Preview of the top 10 rows:
 
-```{r top10, echo=FALSE, message=FALSE, warning=FALSE, results = 'asis'}
+```{r top10, echo=FALSE, message=TRUE, warning=TRUE, results='asis'}
 panderOptions("digits", 2)
 pander(head(dat()))
 ```
 
-Preview of the bottom 10 rows:
+#### Preview of the bottom 10 rows:
 
-```{r bot10, echo=FALSE, message=FALSE, warning=FALSE, results = 'asis'}
+```{r bot10, echo=FALSE, message=TRUE, warning=TRUE, results='asis'}
 panderOptions("digits", 2)
 pander(tail(dat()))
-```
-
-Data Structure:
-
-```{r structure, echo=FALSE, message=FALSE, warning=FALSE}
-print(str(dat()))
 ```
 
 
@@ -42,20 +44,16 @@ print(str(dat()))
 
 ```{r missingvals, echo=FALSE, message=FALSE, warning=FALSE, results = 'asis'}
 if(sum(sapply(dat(), FUN= function(x) sum(is.na(x)))) == 0){
-  
   knitr::kable("There are no missing (NA) values in the dataset")
-  
 } else {
-  
   knitr::kable(sapply(X=dat(), FUN= function(x) sum(is.na(x))))
-  
 }
 ```
 
 
 ### Number of Records
 
-```{r numrecs, echo=FALSE, message=FALSE, warning=FALSE, results = 'asis'}
+```{r numrecs, echo=FALSE, message=TRUE, warning=TRUE, results='asis'}
 Num.Records <- NULL
 Unique.Records <- NULL
 
@@ -73,7 +71,7 @@ knitr::kable(cbind(Column.Name = colnames(dat()), Num.Records, Unique.Records))
 
 ### Summary Statistics
 
-```{r summarystats, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+```{r summarystats, echo=FALSE, message=TRUE, warning=TRUE, results='asis'}
 panderOptions("digits", 2)
 pander(summary(dat()))
 ```
@@ -82,7 +80,7 @@ pander(summary(dat()))
 
 ## Visualisation
 
-```{r determinenumerics, echo=FALSE, message=FALSE, warning=FALSE}
+```{r determinenumerics, echo=FALSE, message=TRUE, warning=TRUE}
 numerics <- as.logical(NULL)
 
 for(j in 1:ncol(dat())){
@@ -95,28 +93,27 @@ x <- dat()[numerics]
 
 ### Univariate Histograms
 
-```{r histogram, echo=FALSE, message=FALSE, warning=FALSE}
-
-uniPlot(data = x, type = "histogram")
+```{r histogram, echo=FALSE, message=TRUE, warning=TRUE}
+uniPlot(data = x, mfrow = c(2,2), type = "histogram")
 par(mfrow=c(1,1))
-
 ```
 
 \pagebreak
 
 ### Scatterplot Matrix
 
-```{r scatterplot, echo=FALSE, message=FALSE, warning=FALSE}
+```{r scatterplot, echo=FALSE, message=TRUE, warning=TRUE}
 if(length(x) <= 1){
   knitr::kable("The scatterplot will only generate if there is more than one numeric variable.")
 }else{
-  scatterplotMatrix(x[,1:min(length(x), 6)], id.col = "Red",
-                  main = paste("Scatterplot Matrix of", getfilename()[1]),
-                  diagonal = "histogram",
-                  smoother = FALSE,
-                 # reg.line = FALSE,
-                  id.n = 1,
-                  id.method = "mahal")
+  try( scatterplotMatrix(x[,1:min(length(x), 6)], id.col = "Red",
+                         main = paste("Scatterplot Matrix of", getfilename()[1]),
+                         diagonal = "histogram",
+                         smoother = FALSE,
+                         # reg.line = FALSE,
+                         id.n = 1,
+                         id.method = "mahal",
+                         use = "pairwise.complete.obs"))
   knitr::kable("Only a maximum of six numeric variables are presented")
 }
 ```
@@ -125,20 +122,22 @@ if(length(x) <= 1){
 
 ### Correlations
 
-```{r correlations, echo=FALSE, message=FALSE, warning=FALSE}
+```{r correlations, echo=FALSE, message=TRUE, warning=TRUE}
 par(mfrow=c(1,1))
 
 if(length(x) <= 1){
   knitr::kable("The plot will only generate if there is more than one numeric variable.")
 }else{
-  corrgram(x, 
-           order=NULL, 
-           lower.panel=panel.shade,
-           upper.panel=panel.cor, 
-           text.panel=panel.txt,
-           main= paste("Correllation Plot of",  getfilename()[1])
+  cormat <- try(cor(x, use = "na.or.complete"))
+  knitr::kable(cormat)
+  try(
+    corrgram(cormat, 
+             order=NULL, 
+             lower.panel=panel.shade,
+             upper.panel=panel.cor, 
+             text.panel=panel.txt,
+             main= paste("Correllation Plot of",  getfilename()[1]))
   )
-    knitr::kable(cor(x))
 }
 
 ```
@@ -147,7 +146,7 @@ if(length(x) <= 1){
 
 ### Factor Plots  
 
-```{r factorplot, echo=FALSE, message=FALSE, warning=FALSE}
+```{r factorplot, echo=FALSE, message=TRUE, warning=TRUE}
 par(mfrow=c(2,2))
 
 for(j in 1:ncol(dat())){
@@ -170,14 +169,14 @@ for(j in 1:ncol(dat())){
 
 Assessment for multivariate outliers using a Mahalanobis Chi-Square QQ Plot. An observation is an outlier if it's Mahalanobis distance is greater than the chi-square quantile value. 
 
-```{r outliers, echo=FALSE, message=FALSE, warning=FALSE}
+```{r outliers, echo=FALSE, message=TRUE, warning=TRUE}
 par(mfrow=c(1,1))
 
 if(length(x) <= 1){
   knitr::kable("The function will only generate if there is more than one numeric variable.")
 }else{
-  result = mvOutlier(x[1:dim(x)[1],1:dim(x)[2]], qqplot = TRUE, method = "quan", label = TRUE)
-  knitr::kable(result$outlier[result$outlier$Outlier== TRUE,])
+  result = try(mvOutlier(x[1:dim(x)[1],1:dim(x)[2]], qqplot = TRUE, method = "quan", label = TRUE))
+ try( knitr::kable(result$outlier[result$outlier$Outlier== TRUE,]))
 }
 ```
 
