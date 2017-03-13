@@ -18,7 +18,6 @@ shinyUI(
     titlePanel(""), # No title decided yet
     sidebarLayout(
       sidebarPanel(
-        
         # CSV Upload Device
         h3("Step 1"),
         fileInput('file', 
@@ -38,27 +37,21 @@ shinyUI(
         
         # Download Device
         h3("Step 3"),
-        radioButtons('format', 
-                     'Download Report', 
-                     c('PDF', 'HTML', 'Word'),
-                     inline = TRUE
-        ),
         downloadButton('downloadReport')
         
       ),
       
       mainPanel(
-        
-        #Placeholder image - replace with meaningful logo at some stage
-        img(src="rimage.jpg", height = 107, width = 107),
-        
         # Header and text block
-        h2("Automatic Insights Report - AIR"),
+        h2("Automatic Insights Report"),
         br(),
-        ("Start getting insights by uploading any CSV (comma separated) file to be analysed. Make sure the data are in a table starting in the top left hand corner with column labels only."),
+        ("This interface runs an automated report for exploratory data analysis. By default it will provide data profiling, summary statistics, data visualisation and outlier deteciton."),
         br(),
+        ("1. Start by uploading any CSV (comma separated) file to be analysed."), 
         br(),
-        ("Click on the Download button in sidebar to download your completed Automated Insights Report."),
+        ("2. Make sure the data are in Tidy format"),  
+        br(),
+        ("3. Click on the Download button in sidebar to download the Automated Insights Report."),
         br(),
         br(),
         

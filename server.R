@@ -5,7 +5,7 @@
 #' 
 #' Author: Dean Marchiori
 #' Date: March 2017
-#' Desc: Shiny Package for "Automated Insights Report" project
+#' Desc: Shiny Package for "Automated Insights Report" 
 #' Aims to produce a Shiny UI to upload, interact and download a data as a report.
 # =======================================================================================#
 
@@ -17,7 +17,6 @@ library(corrgram)
 library(pander)
 library(rmarkdown)
 
-# Start of Shiny Server function
 shinyServer(function(input, output) {
   
   #Store filename for display only
@@ -39,14 +38,8 @@ shinyServer(function(input, output) {
   # Download Report Handler
   output$downloadReport <- downloadHandler(
     filename = function() {
-      paste('air', 
-            sep = '.', 
-            switch(
-              input$format, 
-              PDF = 'pdf', 
-              HTML = 'html', 
-              Word = 'docx'
-            ))
+      paste0("AIR_Report", 
+              '.pdf')
     },
     
     content = function(file) {
@@ -55,14 +48,7 @@ shinyServer(function(input, output) {
       owd <- setwd(tempdir())
       on.exit(setwd(owd))
       file.copy(src, 'airreport.Rmd', overwrite = TRUE)
-      out <- render('airreport.Rmd', 
-                    switch(
-                      input$format,
-                      PDF = pdf_document(), 
-                      HTML = html_document(), 
-                      Word = word_document()
-                    )
-      )
+      out <- render('airreport.Rmd', pdf_document()) 
       file.rename(out, file)
     }
   )
