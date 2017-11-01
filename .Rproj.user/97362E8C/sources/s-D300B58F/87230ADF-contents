@@ -1,0 +1,12 @@
+library(corrgram)
+
+data(iris)
+write.csv(iris, 'iris.csv', row.names = FALSE)
+levels(iris[,5])
+colnames(iris)
+
+for(j in 1:ncol(iris)){
+  if(is.factor(iris[,j])){
+    cat(colnames(iris)[j], "has unique levels:" ,levels(iris[,j]), "\n")
+  }
+}  

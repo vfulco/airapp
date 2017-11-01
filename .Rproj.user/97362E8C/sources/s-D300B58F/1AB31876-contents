@@ -46,33 +46,34 @@ if(sum(sapply(dat(), FUN= function(x) sum(is.na(x)))) == 0){
 ```
 
 
-\pagebreak
 
 
-## Data Preview 
+## Preview 
 
-### Preview of the top 5 rows:
+### Preview of the top 10 rows:
 
 ```{r top10, echo=FALSE, message=TRUE, warning=TRUE, results='asis'}
 panderOptions("digits", 2)
-pander(head(dat(), 5))
+pander(head(dat()))
 ```
 
-### Preview of the bottom 5 rows:
+### Preview of the bottom 10 rows:
 
 ```{r bot10, echo=FALSE, message=TRUE, warning=TRUE, results='asis'}
 panderOptions("digits", 2)
-pander(tail(dat(), 5))
+pander(tail(dat()))
 ```
 
 ### Unique Levels:  
 ```{r uniquelevs, echo=FALSE, message=TRUE, warning=TRUE}
 for(j in 1:ncol(dat())){
   if(is.factor(dat()[,j])){
-   cat(colnames(dat())[j], "has unique levels:" ,levels(dat()[,j]), "\n")
+   levels(dat()[j])
   }
 }  
 ```
+
+
 
 
 \pagebreak
@@ -80,11 +81,11 @@ for(j in 1:ncol(dat())){
 ## Statistics  
 
 ### Summary Statistics
+
 ```{r summarystats, echo=FALSE, message=TRUE, warning=TRUE, results='asis'}
 panderOptions("digits", 2)
 pander(summary(dat()))
 ```
-
 
 \pagebreak
 
@@ -101,8 +102,18 @@ x <- dat()[numerics]
 ```
 
 
+### Univariate Histograms
+
+```{r histogram, echo=FALSE, message=TRUE, warning=TRUE}
+uniPlot(data = x, mfrow = c(2,2), type = "histogram")
+par(mfrow=c(1,1))
+```
+
+\pagebreak
+
 ### Scatterplot Matrix
-```{r scatterplot, echo=FALSE, message=FALSE, warning=FALSE}
+
+```{r scatterplot, echo=FALSE, message=TRUE, warning=TRUE}
 if(length(x) <= 1){
   knitr::kable("The scatterplot will only generate if there is more than one numeric variable.")
 }else{
@@ -120,7 +131,7 @@ if(length(x) <= 1){
 
 \pagebreak
 
-### Correlation Plot
+### Correlations
 
 ```{r correlations, echo=FALSE, message=TRUE, warning=TRUE}
 par(mfrow=c(1,1))
@@ -144,7 +155,7 @@ if(length(x) <= 1){
 
 \pagebreak
 
-### Factor Plot
+### Factor Plots  
 
 ```{r factorplot, echo=FALSE, message=TRUE, warning=TRUE}
 par(mfrow=c(2,2))
@@ -165,7 +176,7 @@ for(j in 1:ncol(dat())){
 
 \pagebreak
 
-## Multivariate Outlier Detection
+## Outliers  
 
 Assessment for multivariate outliers using a Mahalanobis Chi-Square QQ Plot. An observation is an outlier if it's Mahalanobis distance is greater than the chi-square quantile value. 
 
