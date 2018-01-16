@@ -8,10 +8,12 @@ Current features include:
 
 * Data profiling  
 * Summary statistics  
+* Univariate Histograms
 * Scatterplot matrix  
 * Correlation matrix  
+* Factor Barplots
 * NA detection  
-* Multivariate outlier detection  
+
 
 ## Instructions
 
