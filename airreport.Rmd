@@ -100,6 +100,20 @@ for(j in 1:ncol(dat())){
 x <- dat()[numerics]
 ```
 
+### Univariate Histograms
+
+```{r histos, echo=FALSE, message=TRUE, warning=TRUE}
+par(mfrow=c(2,2))
+
+for(j in 1:ncol(x)){
+    hist(x[,j], 
+         xlab = colnames(x[j]),
+         main = colnames(x[j]),
+         col = "firebrick")
+}  
+```
+
+\pagebreak  
 
 ### Scatterplot Matrix
 ```{r scatterplot, echo=FALSE, message=FALSE, warning=FALSE}
@@ -164,19 +178,4 @@ for(j in 1:ncol(dat())){
 ```
 
 \pagebreak
-
-## Multivariate Outlier Detection
-
-Assessment for multivariate outliers using a Mahalanobis Chi-Square QQ Plot. An observation is an outlier if it's Mahalanobis distance is greater than the chi-square quantile value. 
-
-```{r outliers, echo=FALSE, message=TRUE, warning=TRUE}
-par(mfrow=c(1,1))
-
-if(length(x) <= 1){
-  knitr::kable("The function will only generate if there is more than one numeric variable.")
-}else{
-  result = try(mvOutlier(x[1:dim(x)[1],1:dim(x)[2]], qqplot = TRUE, method = "quan", label = TRUE))
- try( knitr::kable(result$outlier[result$outlier$Outlier== TRUE,]))
-}
-```
 
