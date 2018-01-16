@@ -1,0 +1,178 @@
+---
+title: "Automated Insights Report"
+author: "Diagnosic & Exploratory Data Report"
+date: "`r format(Sys.Date(), '%d %B %Y')`"
+output: 
+  pdf_document: 
+    toc: yes
+---
+
+## Data Profile
+
+Dataset name: `r getfilename()[1]`
+
+Dimensions: `r dim(dat())[1]` rows and `r dim(dat())[2]` columns.
+
+Column names: `r colnames(dat())`
+
+
+### Data Structure:
+```{r structure, echo=FALSE, message=TRUE, warning=TRUE}
+print(str(dat()))
+```
+
+
+### Number of Records
+```{r numrecs, echo=FALSE, message=TRUE, warning=TRUE, results='asis'}
+Num.Records <- NULL
+Unique.Records <- NULL
+
+for(i in 1:ncol(dat())){
+  Num.Records[i] <- nrow(dat()[i])
+  Unique.Records[i] <- nrow(unique(dat()[i]))
+}
+
+knitr::kable(cbind(Column.Name = colnames(dat()), Num.Records, Unique.Records))
+```
+
+
+### Missing Values
+```{r missingvals, echo=FALSE, message=FALSE, warning=FALSE, results = 'asis'}
+if(sum(sapply(dat(), FUN= function(x) sum(is.na(x)))) == 0){
+  knitr::kable("There are no missing (NA) values in the dataset")
+} else {
+  knitr::kable(sapply(X=dat(), FUN= function(x) sum(is.na(x))))
+}
+```
+
+
+\pagebreak
+
+
+## Data Preview 
+
+### Preview of the top 5 rows:
+
+```{r top10, echo=FALSE, message=TRUE, warning=TRUE, results='asis'}
+panderOptions("digits", 2)
+pander(head(dat(), 5))
+```
+
+### Preview of the bottom 5 rows:
+
+```{r bot10, echo=FALSE, message=TRUE, warning=TRUE, results='asis'}
+panderOptions("digits", 2)
+pander(tail(dat(), 5))
+```
+
+### Unique Levels:  
+```{r uniquelevs, echo=FALSE, message=TRUE, warning=TRUE}
+for(j in 1:ncol(dat())){
+  if(is.factor(dat()[,j])){
+   cat(colnames(dat())[j], "has unique levels:" ,levels(dat()[,j]), "\n")
+  }
+}  
+```
+
+
+\pagebreak
+
+## Statistics  
+
+### Summary Statistics
+```{r summarystats, echo=FALSE, message=TRUE, warning=TRUE, results='asis'}
+panderOptions("digits", 2)
+pander(summary(dat()))
+```
+
+
+\pagebreak
+
+## Visualisation
+
+```{r determinenumerics, echo=FALSE, message=TRUE, warning=TRUE}
+numerics <- as.logical(NULL)
+
+for(j in 1:ncol(dat())){
+  numerics[j] <- is.numeric(dat()[,j])
+} 
+
+x <- dat()[numerics]
+```
+
+### Univariate Histograms
+
+```{r histos, echo=FALSE, message=TRUE, warning=TRUE}
+par(mfrow=c(2,2))
+
+for(j in 1:ncol(x)){
+    hist(x[j])
+}  
+```
+
+\pagebreak  
+
+### Scatterplot Matrix
+```{r scatterplot, echo=FALSE, message=FALSE, warning=FALSE}
+if(length(x) <= 1){
+  knitr::kable("The scatterplot will only generate if there is more than one numeric variable.")
+}else{
+  try( scatterplotMatrix(x[,1:min(length(x), 6)], id.col = "Red",
+                         main = paste("Scatterplot Matrix of", getfilename()[1]),
+                         diagonal = "histogram",
+                         smoother = FALSE,
+                         # reg.line = FALSE,
+                         id.n = 1,
+                         id.method = "mahal",
+                         use = "pairwise.complete.obs"))
+  knitr::kable("Only a maximum of six numeric variables are presented")
+}
+```
+
+\pagebreak
+
+### Correlation Plot
+
+```{r correlations, echo=FALSE, message=TRUE, warning=TRUE}
+par(mfrow=c(1,1))
+
+if(length(x) <= 1){
+  knitr::kable("The plot will only generate if there is more than one numeric variable.")
+}else{
+  cormat <- try(cor(x, use = "na.or.complete"))
+  knitr::kable(cormat)
+  try(
+    corrgram(cormat, 
+             order=NULL, 
+             lower.panel=panel.shade,
+             upper.panel=panel.cor, 
+             text.panel=panel.txt,
+             main= paste("Correllation Plot of",  getfilename()[1]))
+  )
+}
+
+```
+
+\pagebreak
+
+### Factor Plot
+
+```{r factorplot, echo=FALSE, message=TRUE, warning=TRUE}
+par(mfrow=c(2,2))
+
+for(j in 1:ncol(dat())){
+  if(is.factor(dat()[,j])){
+    barplot(sort(head(table(dat()[j]), n = 20), decreasing= TRUE), 
+            horiz= FALSE, 
+            col ="#31688EFF", 
+            ylab = "Frequency", 
+            las = 2,
+            cex.names= 0.8,
+            main = colnames(dat())[j]
+            )
+  }
+}  
+```
+
+\pagebreak
+
